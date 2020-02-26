@@ -215,7 +215,10 @@ class FieldTracker:
         self.fields = set(self.fields)
         if django.VERSION >= (1, 10):
             for field_name in self.fields:
-                descriptor = getattr(sender, field_name)
+                try:
+                    descriptor = getattr(sender, field_name)
+                except AttributeError:
+                    continue
                 wrapper_cls = DescriptorWrapper.cls_for_descriptor(descriptor)
                 wrapped_descriptor = wrapper_cls(field_name, descriptor, self.attname)
                 setattr(sender, field_name, wrapped_descriptor)
